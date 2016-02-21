@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>infinite jest</title>
+  <style>
+  body {
+    font-family: monospace;
+    font-size: 1.6em;
+  }
+
+  #credit {
+    background: white;
+    font-size: 0.6em;
+    padding: 2em;
+    position: fixed;
+    right: 0;
+    top: 0;
+  }
+
+  a {
+    color: #E44F6C;
+    font-size: 1.1em;
+  }
+
+  #dfw {
+    display: block;
+    font-size: 1.2em;
+    margin: 0.4em 0;
+  }
+
+  @media screen and (max-width: 350px) {
+    body {
+      font-size: 1em;
+    }
+  }
+  </style>
+</head>
+<body>
+  <div id="credit">
+    a hat-tip to
+    <a id="dfw" href="http://www.theguardian.com/books/2015/sep/03/the-best-novels-in-english-readers-alternative-list" target="_blank">David Foster Wallace</a>
+    from
+    <a href="http://marcdavi.es/" target="_blank">marcdavi.es</a>
+  </div>
+<script>
+
+(function (w,d,b){
+  var bottomDiv,
+      i,
+      p = 0,
+      s = 0,  
+      str1 = '&lt;div&gt;',
+      str2 = '&lt;/div&gt;',
+      string = '&lt;div&gt;&lt;/div&gt;',
+      substr,
+      topDiv;
+      
+  function printString (element, string) {
+    element.innerHTML = string;
+  }
+  
+  function schedulePrint (element, string, s) {
+    w.setTimeout(printString, s, element, string);
+  }
+  
+  function newDiv () {
+    return d.createElement('div');
+  }
+  
+  function setDimensions (div) {
+    div.style.height = '1.15em';
+    div.style.width = '10em';
+  }
+  
+  function scheduleDimensions (div, s) {
+    s += 500;
+    w.setTimeout(setDimensions, s, div);
+    s += 500;
+  }
+  
+  function constrainedRandomDelay () {
+    return Math.random() * (200 - 50) + 50;
+  }
+  
+  function insertBottomDiv (bottomDiv, nextDiv, p) {
+    bottomDiv.style.paddingLeft = p + 'em';
+    nextDiv ? b.insertBefore(bottomDiv,nextDiv) : b.appendChild(bottomDiv);
+  }
+  
+  function scheduleBottomDiv (bottomDiv, nextDiv, p, s) {
+    return w.setTimeout(insertBottomDiv, s, bottomDiv, nextDiv, p);
+  }
+  
+  function insertTopDiv (topDiv, bottomDiv, p) {
+    topDiv.style.paddingLeft = p + 'em';
+    b.insertBefore(topDiv,bottomDiv);
+  }
+  
+  function scheduleTopDiv (topDiv, bottomDiv, p, s) {
+    return w.setTimeout(insertTopDiv, s, topDiv, bottomDiv, p);
+  }
+  
+  function nestOnce (nextDiv) {
+    
+    bottomDiv = newDiv();
+    scheduleBottomDiv(bottomDiv, nextDiv, p, s);
+
+    scheduleDimensions(bottomDiv,s);
+    s += 1500;
+    
+    for (i = 0; i < string.length ; i++) {
+      if (string[i] === '&') i += 3;
+      s += constrainedRandomDelay();
+      substr = string.substr(0,i+1);
+      schedulePrint(bottomDiv, substr,s);
+    }
+
+    topDiv = newDiv(); 
+    scheduleTopDiv(topDiv, bottomDiv, p, s)
+       
+    s += 1000;
+    schedulePrint(topDiv, str1,s);
+    schedulePrint(bottomDiv, str2,s);
+  
+    p += 1.2;
+    nestOnce(bottomDiv);
+  }
+    
+  nestOnce();
+    
+})(window,document,document.getElementsByTagName('body')[0]);
+</script>
+</body>
+</html>
